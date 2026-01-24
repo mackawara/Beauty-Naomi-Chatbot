@@ -1,8 +1,7 @@
-import dotenv from 'dotenv'
+import dotenv from "dotenv";
 
-dotenv.config()
+dotenv.config();
 
- export const CONFIG = {
-   PORT:   process.env.PORT || 4000
-    
-    }
+export const CONFIG = {
+  PORT: process.env.PORT || 4000,
+};
