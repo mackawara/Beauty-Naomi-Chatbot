@@ -1,4 +1,5 @@
 import express, {Request, Response} from 'express'
+import { logger } from './services/logger';
 import { CONFIG } from './config'
 import cors from 'cors'
 
@@ -15,5 +16,5 @@ app.get('/', (req: Request, res: Response) =>{
 })
 
 app.listen(port,()=>{
-    console.log(`Server running on port ${port}`);
+    logger.info(`Server running on port ${port}`);
 })
