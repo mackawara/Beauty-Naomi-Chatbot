@@ -12,6 +12,7 @@ const mandatoryEnvironmentConstants = [
   "MONGODB_PASSWORD",
   "MONGODB_USERNAME",
   "MONGODB_HOST",
+  "WHATSAPP_WEBHOOK_VERIFICATION_TOKEN",
 ];
 
 const missingEnvironmentVariables = mandatoryEnvironmentConstants.filter(
@@ -30,6 +31,7 @@ if (missingEnvironmentVariables.length > 0) {
   MONGODB_USERNAME=username
   MONGODB_PASSWORD=password
   MONGODB_DATABASE_HOST=cluster_path/database_name
+  WHATSAPP_WEBHOOK_VERIFICATION_TOKEN= whatsapp_verification_token
   ...
   `,
   );
@@ -43,8 +45,9 @@ export const CONFIG = {
   MONGODB_HOST: process.env.MONGODB_HOST || "0.0.0.0",
   MONGODB_PASSWORD: process.env.MONGODB_PASSWORD || "",
   MONGODB_USERNAME: process.env.MONGODB_USERNAME || "",
-
-}; 
+  WHATSAPP_WEBHOOK_VERIFICATION_TOKEN:
+    process.env.WHATSAPP_WEBHOOK_VERIFICATION_TOKEN || "",
+};
 logger.warn(
   `[${TAG}] Running in ${CONFIG.IS_LOCAL_ENVIRONMENT ? "LOCAL" : "PRODUCTION"} environment`,
 );

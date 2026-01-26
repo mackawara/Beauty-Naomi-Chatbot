@@ -1,12 +1,15 @@
 import express, { Request, Response } from "express";
-import { logger } from './services/logger';
+import { logger } from "./services/logger";
 import { CONFIG } from "./config";
 import cors from "cors";
 import { connectDb } from "./services/db";
+import router from "./routes/whatsappRoutes";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.use("/whatsapp", router);
 
 app.get("/", (req: Request, res: Response) => {
   res.json({
