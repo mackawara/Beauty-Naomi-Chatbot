@@ -1,13 +1,10 @@
 import express, { Request, Response } from "express";
 import { verifyWebhookToken } from "../services/Whatsapp/verifyWebhooks";
+import { incomingMessages } from "../services/Whatsapp/incomingMessages";
 
 const router = express.Router();
 
 router.get("/messages", verifyWebhookToken());
-router.post("/messages", (req: Request, res: Response) => {
-  res.status(200).json({
-    message: "Sending messages is working",
-  });
-});
+router.post("/messages", incomingMessages);
 
 export default router;
