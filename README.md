@@ -31,3 +31,22 @@ Configure event subscriptions after verification e.g messages, flows and catalog
 Ensure incoming webhook payloads are accepted and acknowledged
 Manage all tokens and secrets using environment variables which is the .env file
 Confirm the endpoint is stable and has error handling and ready for production traffic
+
+# Setting up Redis on Windows (On Mac you run it natively)
+Pull Redis Image
+Open Docker Desktop (make sure it's running)
+Go to the "Images" tab on the left sidebar
+Click "Pull" in the top right corner
+Type redis:alpine in the search box
+Click "Pull" to download the Redis image
+
+Then
+Go to the "Containers" tab
+Click "Run" button
+In the popup window:
+Image: redis:alpine (should auto-fill)
+Container name: redis-dev (or any name you like)
+Find the "Ports" section
+Change 6379:6379 to 6379:6379
+(This means: your computer port 6379 → Redis port 6379)
+Click Run
