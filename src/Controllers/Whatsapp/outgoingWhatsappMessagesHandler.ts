@@ -1,9 +1,9 @@
-import axios from 'axios';
-import { logger } from '../logger'
-import { CONFIG } from '../../config';
-import constants from '../../constants';
-import UTILS from '../../UTILS';
-import { Interactive } from '../../types/types';
+import axios from "axios";
+import { logger } from "../../services/logger";
+import { CONFIG } from "../../config";
+import constants from "../../constants";
+import UTILS from "../../UTILS";
+import { Interactive } from "../../types/types";
 
 const whatsappApiVersion = "v21.0";
 
@@ -13,7 +13,7 @@ const TAG = "[WHATSAPP-MESSAGING]";
 
 const sendFreeFormTextMessage = async (
   receivingNumber: string,
-  text: string
+  text: string,
 ) => {
   logger.info(messagesEndpointUrl);
   await axios({
@@ -28,17 +28,17 @@ const sendFreeFormTextMessage = async (
       headers: headers,
     },
   }).catch((err: any) => {
-     if (UTILS.isFacebookAPIError(err)) {
+    if (UTILS.isFacebookAPIError(err)) {
       logger.error(err.response.data.error.message);
     } else {
       logger.error(err);
     }
- });
+  });
 };
 
 const sendInteractive = async (
   receivingNumber: string,
-  interactiveObject: Interactive
+  interactiveObject: Interactive,
 ) => {
   try {
     const result = await axios({
@@ -53,23 +53,21 @@ const sendInteractive = async (
       },
     });
     logger.info(
-      `${TAG}: message sent to ${receivingNumber}, status: ${result.statusText}`
+      `${TAG}: message sent to ${receivingNumber}, status: ${result.statusText}`,
     );
   } catch (err) {
     if (UTILS.isFacebookAPIError(err)) {
       const { message, fbtrace_id, error_data } = err.response.data.error;
       logger.error(
-        `${TAG}: ${message}, ${error_data?.details} Facebook traceID : ${fbtrace_id}`
+        `${TAG}: ${message}, ${error_data?.details} Facebook traceID : ${fbtrace_id}`,
       );
     }
   }
 };
 
-
-
 const whatsappMessager = {
-    sendFreeFormTextMessage,
-    sendInteractive
-}
+  sendFreeFormTextMessage,
+  sendInteractive,
+};
 
-export default whatsappMessager
+export default whatsappMessager;
