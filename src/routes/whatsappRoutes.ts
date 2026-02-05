@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
-import { verifyWebhookToken } from "../services/Whatsapp/verifyWebhooks";
-import { incomingMessages } from "../services/Whatsapp/incomingMessages";
+import { verifyWebhookToken } from "../Controllers/Whatsapp/verifyWebhooks";
+import { incomingMessages } from "../Controllers/Whatsapp/incomingWhatsappMessagesHandler";
 
 const router = express.Router();
 

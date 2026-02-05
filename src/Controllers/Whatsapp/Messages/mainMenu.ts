@@ -1,5 +1,5 @@
-import { ActionSectionRows, Interactive, InteractiveActionSection, ReplyButtonObject } from '../types/types';
-import { MAIN_MENU_PATHS } from '../constants/whatsapp';
+import { ActionSectionRows, Interactive, InteractiveActionSection, ReplyButtonObject } from '../../../types/types';
+import { MAIN_MENU_PATHS } from '../../../constants/whatsapp';
 
 export const MainMenuRows: ActionSectionRows[] = [
   {
@@ -20,26 +20,9 @@ export const MainMenuRows: ActionSectionRows[] = [
   
 ]
 
-export const sections: InteractiveActionSection[] = [{
+export const MainMenuSections: InteractiveActionSection[] = [{
   title: 'Main Menu',
   rows: MainMenuRows
 }]
 
-
-const messageWithReplybuttons = (
-  text: string,
-  buttons: ReplyButtonObject[]
-): Interactive => {
-  const message: Interactive = {
-    type: 'button',
-    body: {
-      text,
-    },
-    action: {
-      buttons,
-    },
-  };
-  return message;
-};
-export const messageComposer = { messageWithReplybuttons };
 
