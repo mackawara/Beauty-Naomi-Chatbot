@@ -1,10 +1,6 @@
-import express, { Request, Response } from "express";
+import { Request, Response } from "express";
 import { logger } from "../../services/logger";
-import { CONFIG } from "../../config";
-import messageComposer from "./messagesComposer";
-import { WebhookNotificationBody } from "../../types/types";
-import whatsappMessager from "./outgoingWhatsappMessagesHandler";
-import { MainMenuSections } from "./Messages/mainMenu";
+import { WebhookNotificationBody, InteractivePayLoad } from "../../types/types";
 import CONVERSATION_CONTROLLER from "../Conversation/conversationController";
 
 export const incomingMessages = async (req: Request, res: Response) => {
@@ -14,26 +10,26 @@ export const incomingMessages = async (req: Request, res: Response) => {
     const { messages } = reqBody.entry[0].changes[0].value;
     if (messages) {
       const notificationType = messages[0].type;
-      const from = messages[0].from;
-      const clientNumber = from;
+      const clientNumber = messages[0].from;
 
       switch (notificationType) {
         case "text":
+          const messageText = messages[0].text.body;
           {
-            await CONVERSATION_CONTROLLER.textReplyHandler();
-            await whatsappMessager.sendInteractive(
+            await CONVERSATION_CONTROLLER.textReplyHandler(
               clientNumber,
-              messageComposer.messageWithReplyList({
-                text: "Hi  \nWe are the Beauty Naomi Chatbot \nHelloooooo \n\n",
-                sections: MainMenuSections,
-                listName: "Main Menu",
-              }),
+              messageText,
             );
           }
           break;
         case "interactive":
           {
-            await CONVERSATION_CONTROLLER.interactiveReplyHandler();
+            const interactivePayload: InteractivePayLoad =
+              messages[0].interactive;
+            await CONVERSATION_CONTROLLER.interactiveReplyHandler(
+              clientNumber,
+              interactivePayload,
+            );
           }
           break;
         case "order":

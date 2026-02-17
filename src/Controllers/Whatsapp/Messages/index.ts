@@ -1,10 +1,17 @@
-import { MainMenuRows, MainMenuSections } from "./mainMenu";
-
+import {
+  MainMenuRows,
+  MainMenuSections,
+  ViewBookingMenuRows,
+  ViewBookingMenuSections,
+} from "./mainMenu";
+import { TextMessages } from "./textMessages";
 
 const WhatsappMessages = {
-    MainMenuRows,
-    MainMenuSections,
-    
-}
+  MainMenuRows,
+  MainMenuSections,
+  ViewBookingMenuRows,
+  ViewBookingMenuSections,
+  TextMessages,
+};
 
-export default WhatsappMessages
+export default WhatsappMessages;
