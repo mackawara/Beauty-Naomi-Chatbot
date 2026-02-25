@@ -3,7 +3,9 @@ import { logger } from "../../services/logger";
 import { CONFIG } from "../../config";
 import constants from "../../constants";
 import UTILS from "../../UTILS";
-import { Interactive } from "../../types/types";
+import { Interactive , InteractiveFlow} from "../../types/types";
+import { isEmpty } from "lodash";
+
 
 const whatsappApiVersion = "v21.0";
 
@@ -65,9 +67,76 @@ const sendInteractive = async (
   }
 };
 
+export function createFlowInteractive(params: {
+  bodyText: string;
+  flowId: string;
+  flowToken: string;
+  flowCta: string;
+  initialScreen: string;
+  initialData?: Record<string, unknown>;
+  headerText?: string;
+  footerText?: string;
+}): InteractiveFlow {
+  const {
+    bodyText,
+    flowId,
+    flowToken,
+    flowCta,
+    initialScreen,
+    initialData,
+    headerText,
+    footerText,
+  } = params;
+  const flowActionPayload = {
+    screen: initialScreen,
+    data:
+      isEmpty(initialData) || initialData === undefined ? null : initialData,
+  };
+  const interactive: InteractiveFlow = {
+    type: "flow",
+    //sub_type: "interactive",
+    body: {
+      text: bodyText.substring(0, 1024), // Enforce WhatsApp limit
+    },
+    action: {
+      name: "flow",
+      parameters: {
+        mode: "published",
+        flow_message_version: "3",
+        flow_token: flowToken,
+        flow_id: flowId,
+        flow_cta: flowCta,
+        flow_action: "navigate",
+        flow_action_payload: {
+          screen: initialScreen,
+          data: isEmpty(initialData) ? undefined : initialData,
+        },
+      },
+    },
+  };
+
+  // Add header if provided
+  if (headerText) {
+    interactive.header = {
+      type: "text",
+      text: headerText.substring(0, 60), // Enforce WhatsApp limit
+    };
+  }
+
+  // Add footer if provided
+  if (footerText) {
+    interactive.footer = {
+      text: footerText.substring(0, 60), // Enforce WhatsApp limit
+    };
+  }
+
+  return interactive;
+}
+
 const whatsappMessager = {
   sendFreeFormTextMessage,
   sendInteractive,
+  createFlowInteractive
 };
 
 export default whatsappMessager;
