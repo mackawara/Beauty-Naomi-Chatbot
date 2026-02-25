@@ -12,6 +12,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "lodash": "^4.17.23",
     "mongoose": "^9.1.5",
     "redis": "^5.10.0",
     "winston": "^3.19.0"
@@ -28,6 +29,7 @@
     "@types/cors": "^2.8.19",
     "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.6",
+    "@types/lodash": "^4.17.24",
     "@types/node": "^25.0.10",
     "eslint": "^9.39.2",
     "globals": "^17.3.0",
