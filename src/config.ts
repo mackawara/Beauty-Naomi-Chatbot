@@ -56,6 +56,7 @@ export const CONFIG = {
     parseInt(process.env.REDIS_CONNECT_TIMEOUT || "0", 10) || 90000,
   WHATSAPP_PHONE_NUMBER_ID: process.env.WHATSAPP_PHONE_NUMBER_ID || "",
   WHATSAPP_SYSTEM_TOKEN: process.env.WHATSAPP_SYSTEM_TOKEN || "",
+  CATALOG_ID: process.env.CATALOG_ID || "",
 };
 logger.warn(
   `[${TAG}] Running in ${CONFIG.IS_LOCAL_ENVIRONMENT ? "LOCAL" : "PRODUCTION"} environment`,
