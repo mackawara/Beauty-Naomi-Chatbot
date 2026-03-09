@@ -40,7 +40,10 @@ const listReplyHandler = async (clientNumber: string, replyId: string) => {
         break;
       case MAIN_MENU_REPLY_ID.book_appointment:
         {
-          logger.info("The book aapointents button was clicked");
+          await whatsappMessager.sendWhatsAppCatalogMessage({
+            phone: clientNumber,
+            bodyText: WhatsappMessages.TextMessages.catalogMessageText
+          })
         }
         break;
       case VIEW_BOOKING_MENU_REPLY_ID.cancel:
