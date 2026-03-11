@@ -92,8 +92,35 @@ export interface Order {
   product_items: OrderItems[];
   text: string;
 }
+
+export interface BookingItems {
+   productName: string;
+  quantity: number;
+  priceAtOrder: number;
+  productRetailerId: string;
+  unitPrice: number;
+  subtotal:number;
+}
+
+export interface WhatsAppOrderProductItem {
+  productRetailerId: string;
+  quantity: number;
+  item_price?: number;
+  currency?: string;
+  brand?: string;
+  description?: string;
+  google_product_category?: string;
+}
+export interface OrderDeliveryFlowData {
+  orderNumber: string;
+  orderDate: string;
+  itemsList: string;
+  totalAmount: string;
+  currency: string;
+  itemCount: number;
+}
 export interface OrderItems {
-  product_retailer_id: string;
+  productRetailerId: string;
   quantity: string;
   item_price: string;
   currency: string;
@@ -529,7 +556,7 @@ export interface WhatsAppFlowRequest {
  * Interface for WhatsApp order product item
  */
 export interface WhatsAppOrderProductItem {
-  product_retailer_id: string;
+  productRetailerId: string;
   quantity: number;
   item_price?: number;
   currency?: string;

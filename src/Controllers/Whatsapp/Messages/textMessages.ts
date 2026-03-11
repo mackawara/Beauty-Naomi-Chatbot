@@ -11,12 +11,14 @@ const viewMyBookingsText =
   "❌ *Cancel*\n\n" +
   "We can't wait to see you! 💖";
 
-  const initialMessageText = "*Welcome to Beauty Naomi!* ✨\n\nHello, Gorgeous! 💖 We’re so happy to have you here. Think of us as your personal beauty assistant—ready to help you look and feel your absolute best.\n\nTap the *Main Menu* button below to explore our services, book an appointment, or manage your visits! 💅✨"
-            
-  const catalogMessageText = "*READY FOR A GLOW UP?* 💅 \n\n 💖 *Tap the button below* to explore our catalog, choose your service and book your session.\n\n"
+const initialMessageText =
+  "*Welcome to Beauty Naomi!* ✨\n\nHello, Gorgeous! 💖 We’re so happy to have you here. Think of us as your personal beauty assistant—ready to help you look and feel your absolute best.\n\nTap the *Main Menu* button below to explore our services, book an appointment, or manage your visits! 💅✨";
 
-  export const TextMessages = {
-    viewMyBookingsText,
-    initialMessageText,
-    catalogMessageText,
-}
+const catalogMessageText =
+  "*READY FOR A GLOW UP?* 💅 \n\n 💖 *Tap the button below* to explore our catalog, choose your service and book your session.\n\n";
+
+export const TextMessages = {
+  viewMyBookingsText,
+  initialMessageText,
+  catalogMessageText,
+};

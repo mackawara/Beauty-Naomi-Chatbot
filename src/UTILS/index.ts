@@ -1,4 +1,5 @@
 import { FacebookAPIError } from "../types/types";
+import { getNextAutoIncrementNumber } from "./getNextAutoIncrementNumber";
 
 const isFacebookAPIError = (error: unknown): error is FacebookAPIError => {
   return (
@@ -12,7 +13,8 @@ const isFacebookAPIError = (error: unknown): error is FacebookAPIError => {
 };
 
 const UTILS = {
-  isFacebookAPIError,
-}
+    isFacebookAPIError,
+    getNextAutoIncrementNumber
+};
 
-export default UTILS
+export default UTILS;
