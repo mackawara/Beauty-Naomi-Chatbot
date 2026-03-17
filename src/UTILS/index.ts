@@ -12,7 +12,7 @@ const isFacebookAPIError = (error: unknown): error is FacebookAPIError => {
 };
 
 const UTILS = {
-    isFacebookAPIError
+  isFacebookAPIError,
 }
 
 export default UTILS

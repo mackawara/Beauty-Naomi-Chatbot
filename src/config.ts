@@ -15,6 +15,9 @@ const mandatoryEnvironmentConstants = [
   "WHATSAPP_WEBHOOK_VERIFICATION_TOKEN",
   "WHATSAPP_PHONE_NUMBER_ID",
   "WHATSAPP_SYSTEM_TOKEN",
+  "CALCOM_API_KEY",
+  "CALCOM_VERSION",
+  "CALCOM_API_VERSION"
 ];
 
 const missingEnvironmentVariables = mandatoryEnvironmentConstants.filter(
@@ -57,6 +60,9 @@ export const CONFIG = {
   WHATSAPP_PHONE_NUMBER_ID: process.env.WHATSAPP_PHONE_NUMBER_ID || "",
   WHATSAPP_SYSTEM_TOKEN: process.env.WHATSAPP_SYSTEM_TOKEN || "",
   CATALOG_ID: process.env.CATALOG_ID || "",
+  CALCOM_API_KEY: process.env.CALCOM_API_KEY,
+  CALCOM_VERSION: process.env.CALCOM_VERSION,
+  CALCOM_API_VERSION: process.env.CALCOM_API_VERSION,
 };
 logger.warn(
   `[${TAG}] Running in ${CONFIG.IS_LOCAL_ENVIRONMENT ? "LOCAL" : "PRODUCTION"} environment`,
