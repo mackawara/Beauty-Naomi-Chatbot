@@ -563,3 +563,38 @@ export interface PaymentDetails {
   orderNumber: string;
   
 }
+
+export type TCreateService = {
+  title: string;
+  slug: string;
+  lengthInMinutes: number;
+};
+
+export type TSlot = {
+  time: string;
+};
+
+export type TCreateBooking = {
+  start: string;
+  attendee: {
+    name: string;
+    email: string;
+    timeZone: string;
+    phoneNumber: string
+  };
+  eventTypeId: number;
+};
+
+export interface ICalcomSlotsResponse {
+  data: {
+    slots: {
+      [date: string]: TSlot[];
+    };
+  };
+}
+
+export interface ServiceResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
