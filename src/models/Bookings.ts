@@ -63,7 +63,7 @@ const bookingSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
-  appointmentTime: {
+  bookingTime: {
     type: String,
     default: ""
   },
@@ -77,4 +77,4 @@ const bookingSchema = new mongoose.Schema({
 });
 
 
-export const Appointment = mongoose.model('Appointment', bookingSchema);
+export const Booking = mongoose.model('Booking', bookingSchema);
