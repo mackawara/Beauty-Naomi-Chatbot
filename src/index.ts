@@ -16,6 +16,7 @@ app.get("/", (req: Request, res: Response) => {
   res.json({
     message: "Server running and working",
   });
+  
 });
 
 Promise.race([
