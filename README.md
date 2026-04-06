@@ -50,3 +50,39 @@ Find the "Ports" section
 Change 6379:6379 to 6379:6379
 (This means: your computer port 6379 → Redis port 6379)
 Click Run
+
+# Setting Up Docker for Beauty Naomi Chatbot
+
+First, make sure Docker Desktop is running on your computer.
+
+Second, run this command to set up the container
+
+docker-compose up -d
+
+The -d flag runs containers in the background.
+
+Then make sure redis is running and change the redis host in the env file to 
+REDIS_HOST=redis
+
+Then also start running ngrok with the command yarn start:ngrok in your vs terminal of the project
+
+Fourth, verify everything is working:
+
+Finally, test the app at http://localhost:3000
+To stop all containers, run:
+
+To stop containers but keep them (can start again):
+  docker-compose  stop
+
+To stop and delete the container use
+ docker-compose  down
+
+Use individual containers only if you need to debug a specific container or test something in isolation.
+
+## Checking if Everything is Running
+
+Open Docker Desktop and go to the Containers tab. You should see three containers running.
+
+Or run this command in terminal:
+
+docker ps
