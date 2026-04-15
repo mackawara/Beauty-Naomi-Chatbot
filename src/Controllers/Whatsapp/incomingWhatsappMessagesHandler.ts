@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { logger } from "../../services/logger";
 import { WebhookNotificationBody, InteractivePayLoad , WhatsAppOrderPayload} from "../../types/types";
 import CONVERSATION_CONTROLLER from "../Conversation/conversationController";
+import { startBooking } from "../booking";
 import { processWhatsAppOrder } from "./order/whatsappOrderHandler";
 
 export const incomingMessages = async (req: Request, res: Response) => {
@@ -53,6 +54,7 @@ export const incomingMessages = async (req: Request, res: Response) => {
              };
 
           await processWhatsAppOrder(clientNumber, orderPayload);
+            await startBooking(clientNumber);
           }
           break;
         case "reaction":

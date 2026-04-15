@@ -21,3 +21,22 @@ export const TEXT_COMMANDS_ID ={
 hi: "hi"
 // can add the cancel commands and aslo admin commands
 }
+
+export const BOOKING_ID = {
+  confirm: "confirm",
+  fixDetails: "fix_details",
+  afternoonSlots: "afternoon_slots",
+  lateAfternoonSlots: "late_afternoon_slots",
+  lateMorningSlots: "late_morning_slots",
+  earlyMorningSlots: "early_morning_slots"
+}
+
+ export const BOOKING_STEPS = {
+    bookingFullName: "1",
+    bookingEmail: "2",
+    bookingPhoneNumber: "3",
+    bookingDate: "4",
+    bookingTime: "5",
+    bookingConfirmation: "6"
+  };
+  

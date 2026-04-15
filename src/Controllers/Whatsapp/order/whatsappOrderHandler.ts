@@ -4,6 +4,9 @@ import { logger } from "../../../services/logger";
 import { Types } from "mongoose";
 import { BookingItems , WhatsAppOrderPayload} from "../../../types/types";
 import { Booking} from "../../../models/Bookings";
+import { getAvailableSlots } from "../../../services/calBooking.service";
+import { Service } from "../../../models/Services";
+import { getRedisKeyValue, setRedisKeyValuePair } from "../../booking";
 
 /**
  * Interface for the response of the WhatsApp order handler
@@ -35,19 +38,20 @@ export const processWhatsAppOrder = async (
     for (const item of orderPayload.product_items) {
       const price = item.item_price || 0;
       const quantity = item.quantity || 1;
-      const productName = `${item.productRetailerId}`;
+      const productName = `${item.product_retailer_id}`;
       itemNames.push(productName);
       logger.info(`This is the item`, item);
        bookingItems.push({
         productName: productName,
         quantity: 1,
   priceAtOrder: price,
-  productRetailerId: item.productRetailerId,
+  productRetailerId: item.product_retailer_id,
   unitPrice: price,
   subtotal:price * quantity,
       });
       totalAmount += price;
-    }
+
+      }
 
     const newBooking = {
       bookingId,
@@ -55,13 +59,14 @@ export const processWhatsAppOrder = async (
       items: bookingItems,
       totalAmount,
       serviceName: orderPayload.product_items
-        .map((item) => item.productRetailerId)
+        .map((item) => item.product_retailer_id)
         .join(", "),
       bookingDate: "",
       appointmentTime: "",
       notes: orderPayload.text || "Order received via WhatsApp",
     };
 
+    await setRedisKeyValuePair(from, "bookingId", bookingId);
     const booking = new Booking(newBooking);
     await booking.save();
 
