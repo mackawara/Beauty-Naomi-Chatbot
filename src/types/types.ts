@@ -103,7 +103,7 @@ export interface BookingItems {
 }
 
 export interface WhatsAppOrderProductItem {
-  productRetailerId: string;
+  product_retailer_id: string;
   quantity: number;
   item_price?: number;
   currency?: string;
@@ -556,7 +556,7 @@ export interface WhatsAppFlowRequest {
  * Interface for WhatsApp order product item
  */
 export interface WhatsAppOrderProductItem {
-  productRetailerId: string;
+  product_retailer_id: string;
   quantity: number;
   item_price?: number;
   currency?: string;
@@ -595,6 +595,7 @@ export type TCreateService = {
   title: string;
   slug: string;
   lengthInMinutes: number;
+  slotInterval: number;
 };
 
 export type TSlot = {

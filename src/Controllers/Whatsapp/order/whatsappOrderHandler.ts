@@ -4,6 +4,8 @@ import { logger } from "../../../services/logger";
 import { Types } from "mongoose";
 import { BookingItems , WhatsAppOrderPayload} from "../../../types/types";
 import { Booking} from "../../../models/Bookings";
+import { serviceHandler, itemDescriptions } from "../../services";
+import { extractAndConvertToMinutes } from "../../services";
 
 /**
  * Interface for the response of the WhatsApp order handler
@@ -35,18 +37,38 @@ export const processWhatsAppOrder = async (
     for (const item of orderPayload.product_items) {
       const price = item.item_price || 0;
       const quantity = item.quantity || 1;
-      const productName = `${item.productRetailerId}`;
+      const productName = `${item.product_retailer_id}`;
       itemNames.push(productName);
       logger.info(`This is the item`, item);
        bookingItems.push({
         productName: productName,
         quantity: 1,
   priceAtOrder: price,
-  productRetailerId: item.productRetailerId,
+  productRetailerId: item.product_retailer_id,
   unitPrice: price,
   subtotal:price * quantity,
       });
       totalAmount += price;
+
+      // saving services
+      const itemDescription = (itemDescriptions as Record<string, string>)[productName];
+      const serviceDuration = extractAndConvertToMinutes(itemDescription);
+      if (serviceDuration === null) {
+        logger.warn(`Could not extract service duration from description: ${itemDescription}`);
+      } else {
+        logger.info(`Extracted service duration: ${serviceDuration} minutes`);
+      }
+      logger.info(`Creating service for product ${productName} with duration ${serviceDuration} minutes from ${itemDescription}`);
+      await serviceHandler({
+        serviceName: productName,
+        productRetailerId: item.product_retailer_id,
+        catalogId: orderPayload.catalog_id,
+        duration: serviceDuration ?? 30,
+        eventTypeId: ""
+      })
+      logger.info(`Service created successfully for ${productName}:`);
+   
+     
     }
 
     const newBooking = {
@@ -55,7 +77,7 @@ export const processWhatsAppOrder = async (
       items: bookingItems,
       totalAmount,
       serviceName: orderPayload.product_items
-        .map((item) => item.productRetailerId)
+        .map((item) => item.product_retailer_id)
         .join(", "),
       bookingDate: "",
       appointmentTime: "",
@@ -68,17 +90,15 @@ export const processWhatsAppOrder = async (
     logger.info(`Order processed for ${from} with booking ID ${bookingId}`);
     await whatsappMessager.sendFreeFormTextMessage(
       from,
-       messageWithOrderSummary( bookingId, itemNames, totalAmount )
-      );
+      messageWithOrderSummary(bookingId, itemNames, totalAmount)
+    );
 
-
+   
     return {
       success: true,
       bookingId: newBooking.bookingId,
       message: `Order ${newBooking.bookingId} created successfully`,
     };
-
-    //TO DO: send the flow with that form template to the user to fill in the details for the appointment
   } catch (error) {
     logger.error("Error processing WhatsApp order:", error);
     return {
@@ -108,10 +128,12 @@ ${itemsList}
 ---
 
 ✅ *What happens next?*
-We are sending a form to you. Make sure to fill in the right details
+We’re sending over a form for you to complete. Please double check that all the details are correct before submitting`
 
-💬 *Need help?*
-If you have any questions or need to change your details, just reply to this message with *help*.
-
-Thank you for choosing *Beauty Naomi*! ✨`;
 };
+
+
+
+
+
+
