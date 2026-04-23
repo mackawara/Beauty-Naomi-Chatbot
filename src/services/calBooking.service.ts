@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { CONFIG } from "../config";
 import { TCreateBooking, TSlot, TCreateService, ICalcomSlotsResponse, ServiceResponse } from "../types/types";
 import { endOfDay, format, isBefore, parseISO, startOfDay } from "date-fns";
-const {CALCOM_API_KEY, CALCOM_VERSION, CALCOM_API_VERSION} = CONFIG;
+const {CALCOM_API_KEY, CALCOM_VERSION, CALCOM_API_VERSION, CALCOM_API_VERSION_BOOKING} = CONFIG;
 
 const calBaseUrl = `https://api.cal.com/v${CALCOM_VERSION}`
 
@@ -74,7 +74,7 @@ export const createBooking = async (
         headers: {
           Authorization: `Bearer ${CALCOM_API_KEY}`,
           "Content-Type": "application/json",
-          "cal-api-version": CALCOM_API_VERSION,
+          "cal-api-version": CALCOM_API_VERSION_BOOKING,
         },
       },
     );

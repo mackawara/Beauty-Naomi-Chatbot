@@ -17,7 +17,8 @@ const mandatoryEnvironmentConstants = [
   "WHATSAPP_SYSTEM_TOKEN",
   "CALCOM_API_KEY",
   "CALCOM_VERSION",
-  "CALCOM_API_VERSION"
+  "CALCOM_API_VERSION",
+  "CALCOM_API_VERSION_BOOKING"
 ];
 
 const missingEnvironmentVariables = mandatoryEnvironmentConstants.filter(
@@ -63,6 +64,7 @@ export const CONFIG = {
   CALCOM_API_KEY: process.env.CALCOM_API_KEY,
   CALCOM_VERSION: process.env.CALCOM_VERSION,
   CALCOM_API_VERSION: process.env.CALCOM_API_VERSION,
+  CALCOM_API_VERSION_BOOKING: process.env.CALCOM_API_VERSION_BOOKING,
 };
 logger.warn(
   `[${TAG}] Running in ${CONFIG.IS_LOCAL_ENVIRONMENT ? "LOCAL" : "PRODUCTION"} environment`,
