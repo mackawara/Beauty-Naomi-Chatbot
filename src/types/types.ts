@@ -103,7 +103,7 @@ export interface BookingItems {
 }
 
 export interface WhatsAppOrderProductItem {
-  productRetailerId: string;
+  product_retailer_id: string;
   quantity: number;
   item_price?: number;
   currency?: string;
@@ -120,7 +120,7 @@ export interface OrderDeliveryFlowData {
   itemCount: number;
 }
 export interface OrderItems {
-  productRetailerId: string;
+  product_retailer_id: string;
   quantity: string;
   item_price: string;
   currency: string;
@@ -556,7 +556,7 @@ export interface WhatsAppFlowRequest {
  * Interface for WhatsApp order product item
  */
 export interface WhatsAppOrderProductItem {
-  productRetailerId: string;
+  product_retailer_id: string;
   quantity: number;
   item_price?: number;
   currency?: string;

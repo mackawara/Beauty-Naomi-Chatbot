@@ -35,14 +35,14 @@ export const processWhatsAppOrder = async (
     for (const item of orderPayload.product_items) {
       const price = item.item_price || 0;
       const quantity = item.quantity || 1;
-      const productName = `${item.productRetailerId}`;
+      const productName = `${item.product_retailer_id}`;
       itemNames.push(productName);
       logger.info(`This is the item`, item);
        bookingItems.push({
         productName: productName,
         quantity: 1,
   priceAtOrder: price,
-  productRetailerId: item.productRetailerId,
+  productRetailerId: item.product_retailer_id,
   unitPrice: price,
   subtotal:price * quantity,
       });
@@ -55,7 +55,7 @@ export const processWhatsAppOrder = async (
       items: bookingItems,
       totalAmount,
       serviceName: orderPayload.product_items
-        .map((item) => item.productRetailerId)
+        .map((item) => item.product_retailer_id)
         .join(", "),
       bookingDate: "",
       appointmentTime: "",
