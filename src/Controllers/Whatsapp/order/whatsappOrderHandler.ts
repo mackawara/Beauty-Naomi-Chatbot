@@ -2,8 +2,11 @@ import UTILS from "../../../UTILS";
 import whatsappMessager from "../outgoingWhatsappMessagesHandler";
 import { logger } from "../../../services/logger";
 import { Types } from "mongoose";
-import { BookingItems , WhatsAppOrderPayload} from "../../../types/types";
-import { Booking} from "../../../models/Bookings";
+import { BookingItems, WhatsAppOrderPayload } from "../../../types/types";
+import { Booking } from "../../../models/Bookings";
+import { setRedisKeyValuePair } from "../../Conversation/redisController";
+import { BOOKING_STAGES } from "../../../constants/whatsapp";
+import { bookingMessages } from "../../../constants/bookingMessages";
 
 /**
  * Interface for the response of the WhatsApp order handler
@@ -23,13 +26,13 @@ export interface WhatsAppOrderHandlerResponse {
 export const processWhatsAppOrder = async (
   from: string,
   orderPayload: WhatsAppOrderPayload,
-): Promise <WhatsAppOrderHandlerResponse> => {
+): Promise<WhatsAppOrderHandlerResponse> => {
   try {
-    const nextBookingId = await UTILS.getNextAutoIncrementNumber("bookings");// bookings is just a placeholder
+    const nextBookingId = await UTILS.getNextAutoIncrementNumber("bookings"); // bookings is just a placeholder
     const bookingId = `BN-${nextBookingId}`;
     logger.info(`Creating appointment ${bookingId} for contact ${from}`);
 
-    let bookingItems: BookingItems[] = []; 
+    let bookingItems: BookingItems[] = [];
     let totalAmount = 0;
     let itemNames = [];
     for (const item of orderPayload.product_items) {
@@ -38,13 +41,13 @@ export const processWhatsAppOrder = async (
       const productName = `${item.product_retailer_id}`;
       itemNames.push(productName);
       logger.info(`This is the item`, item);
-       bookingItems.push({
+      bookingItems.push({
         productName: productName,
         quantity: 1,
-  priceAtOrder: price,
-  productRetailerId: item.product_retailer_id,
-  unitPrice: price,
-  subtotal:price * quantity,
+        priceAtOrder: price,
+        productRetailerId: item.product_retailer_id,
+        unitPrice: price,
+        subtotal: price * quantity,
       });
       totalAmount += price;
     }
@@ -68,19 +71,29 @@ export const processWhatsAppOrder = async (
     logger.info(`Order processed for ${from} with booking ID ${bookingId}`);
     await whatsappMessager.sendFreeFormTextMessage(
       from,
-       messageWithOrderSummary( bookingId, itemNames, totalAmount )
-      );
+      messageWithOrderSummary(bookingId, itemNames, totalAmount),
+    );
 
+    await setRedisKeyValuePair(
+      from,
+      "currentStage",
+      BOOKING_STAGES.bookingFullName,
+    );
+
+    await whatsappMessager.sendFreeFormTextMessage(
+      from,
+      bookingMessages.bookingStagesMsgs.bookingNameMsg,
+    );
 
     return {
       success: true,
-      bookingId: newBooking.bookingId,
-      message: `Order ${newBooking.bookingId} created successfully`,
     };
-
-    //TO DO: send the flow with that form template to the user to fill in the details for the appointment
   } catch (error) {
     logger.error("Error processing WhatsApp order:", error);
+    await whatsappMessager.sendFreeFormTextMessage(
+      from,
+      bookingMessages.bookingStagesMsgs.orderProcessingErrorMsg,
+    );
     return {
       success: false,
       message:
