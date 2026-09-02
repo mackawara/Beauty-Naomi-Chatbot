@@ -5,6 +5,7 @@ import cors from "cors";
 import { connectDb } from "./services/db";
 import router from "./routes/whatsappRoutes";
 import { RedisService } from "./services/redis";
+import { testSchedulerApi } from "./schedulerApi/test.connection";
 
 const app = express();
 app.use(cors());
@@ -34,6 +35,10 @@ Promise.race([
     app.listen(CONFIG.PORT, () => {
       logger.info(`Server running on port ${CONFIG.PORT}`);
     });
+
+    await testSchedulerApi.apiHealthCheck();
+    await testSchedulerApi.apiHealthCheckReady();
+    await testSchedulerApi.apiServicesCheck();
   })
   .catch((error: any) => {
     logger.error(error);

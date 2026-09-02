@@ -65,6 +65,8 @@ export const CONFIG = {
   CALCOM_VERSION: process.env.CALCOM_VERSION,
   CALCOM_API_VERSION: process.env.CALCOM_API_VERSION,
   CALCOM_API_VERSION_BOOKING: process.env.CALCOM_API_VERSION_BOOKING,
+  BASE_URL: process.env.BASE_URL || "http://localhost:4000",
+  SCHEDULER_API_KEY: process.env.SCHEDULER_API_KEY || "KJKJK********************", 
 };
 logger.warn(
   `[${TAG}] Running in ${CONFIG.IS_LOCAL_ENVIRONMENT ? "LOCAL" : "PRODUCTION"} environment`,
