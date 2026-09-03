@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import { logger } from "../../services/logger";
-import { WebhookNotificationBody, InteractivePayLoad , WhatsAppOrderPayload} from "../../types/types";
+import {
+  WebhookNotificationBody,
+  InteractivePayLoad,
+  WhatsAppOrderPayload,
+} from "../../types/types";
 import CONVERSATION_CONTROLLER from "../Conversation/conversationController";
 import { processWhatsAppOrder } from "./order/whatsappOrderHandler";
 
@@ -35,24 +39,27 @@ export const incomingMessages = async (req: Request, res: Response) => {
           break;
         case "order":
           {
-            logger.info("Processing WhatsApp catalog order from:", clientNumber);
-          const rawOrder = messages[0].order;
-             const orderPayload: WhatsAppOrderPayload = {
-               ...rawOrder,
-               product_items: rawOrder?.product_items?.map((item: any) => ({
-                 ...item,
-                 quantity:
-                   typeof item.quantity === "string"
-                     ? Number(item.quantity)
-                     : item.quantity,
-                 item_price:
-                   typeof item.item_price === "string"
-                     ? Number(item.item_price)
-                     : item.item_price,
-               })),
-             };
+            logger.info(
+              "Processing WhatsApp catalog order from:",
+              clientNumber,
+            );
+            const rawOrder = messages[0].order;
+            const orderPayload: WhatsAppOrderPayload = {
+              ...rawOrder,
+              product_items: rawOrder?.product_items?.map((item: any) => ({
+                ...item,
+                quantity:
+                  typeof item.quantity === "string"
+                    ? Number(item.quantity)
+                    : item.quantity,
+                item_price:
+                  typeof item.item_price === "string"
+                    ? Number(item.item_price)
+                    : item.item_price,
+              })),
+            };
 
-          await processWhatsAppOrder(clientNumber, orderPayload);
+            await processWhatsAppOrder(clientNumber, orderPayload);
           }
           break;
         case "reaction":
