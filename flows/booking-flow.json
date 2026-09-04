@@ -1,0 +1,296 @@
+{
+  "version": "7.0",
+  "data_api_version": "3.0",
+  "routing_model": {
+    "SERVICE": ["SCHEDULE"],
+    "SCHEDULE": ["DETAILS"],
+    "DETAILS": ["SUMMARY"],
+    "SUMMARY": ["SUCCESS"],
+    "SUCCESS": []
+  },
+  "screens": [
+    {
+      "id": "SERVICE",
+      "title": "Choose a service",
+      "data": {
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          },
+          "__example__": [
+            { "id": "1", "title": "Hair Wash", "description": "1h · $20.00" }
+          ]
+        },
+        "has_error": { "type": "boolean", "__example__": false },
+        "error_message": { "type": "string", "__example__": "" }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "Form",
+            "name": "service_form",
+            "children": [
+              {
+                "type": "TextBody",
+                "text": "${data.error_message}",
+                "visible": "${data.has_error}"
+              },
+              {
+                "type": "RadioButtonsGroup",
+                "name": "service_id",
+                "label": "What are you booking?",
+                "required": true,
+                "data-source": "${data.services}"
+              },
+              {
+                "type": "Footer",
+                "label": "Continue",
+                "on-click-action": {
+                  "name": "data_exchange",
+                  "payload": { "service_id": "${form.service_id}" }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "SCHEDULE",
+      "title": "Pick a time",
+      "data": {
+        "dates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" }
+            }
+          },
+          "__example__": [{ "id": "2026-09-01", "title": "Today, Tue 1 Sep" }]
+        },
+        "times": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          },
+          "__example__": [
+            { "id": "2026-09-01T07:00:00.000Z", "title": "09:00", "description": "with Naomi" }
+          ]
+        },
+        "selected_date": { "type": "string", "__example__": "2026-09-01" },
+        "has_times": { "type": "boolean", "__example__": true },
+        "service_name": { "type": "string", "__example__": "Hair Wash" },
+        "no_times_message": { "type": "string", "__example__": "" },
+        "has_error": { "type": "boolean", "__example__": false },
+        "error_message": { "type": "string", "__example__": "" }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "Form",
+            "name": "schedule_form",
+            "children": [
+              {
+                "type": "TextBody",
+                "text": "${data.error_message}",
+                "visible": "${data.has_error}"
+              },
+              {
+                "type": "Dropdown",
+                "name": "selected_date",
+                "label": "Day",
+                "required": true,
+                "data-source": "${data.dates}",
+                "on-select-action": {
+                  "name": "data_exchange",
+                  "payload": {
+                    "selected_date": "${form.selected_date}",
+                    "trigger": "date_changed"
+                  }
+                }
+              },
+              {
+                "type": "TextBody",
+                "text": "${data.no_times_message}",
+                "visible": "${data.has_times}"
+              },
+              {
+                "type": "RadioButtonsGroup",
+                "name": "slot_start",
+                "label": "Available times",
+                "required": true,
+                "visible": "${data.has_times}",
+                "data-source": "${data.times}"
+              },
+              {
+                "type": "Footer",
+                "label": "Continue",
+                "enabled": "${data.has_times}",
+                "on-click-action": {
+                  "name": "data_exchange",
+                  "payload": {
+                    "selected_date": "${form.selected_date}",
+                    "slot_start": "${form.slot_start}"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "DETAILS",
+      "title": "Your details",
+      "data": {
+        "service_name": { "type": "string", "__example__": "Hair Wash" },
+        "default_name": { "type": "string", "__example__": "" },
+        "phone": { "type": "string", "__example__": "+263771234567" },
+        "has_error": { "type": "boolean", "__example__": false },
+        "error_message": { "type": "string", "__example__": "" }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "Form",
+            "name": "details_form",
+            "children": [
+              {
+                "type": "TextBody",
+                "text": "${data.error_message}",
+                "visible": "${data.has_error}"
+              },
+              {
+                "type": "TextInput",
+                "name": "customer_name",
+                "label": "Your name",
+                "input-type": "text",
+                "required": true,
+                "init-value": "${data.default_name}"
+              },
+              {
+                "type": "TextCaption",
+                "text": "We'll confirm on this WhatsApp number."
+              },
+              {
+                "type": "Footer",
+                "label": "Review booking",
+                "on-click-action": {
+                  "name": "data_exchange",
+                  "payload": { "customer_name": "${form.customer_name}" }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "SUMMARY",
+      "title": "Confirm",
+      "data": {
+        "service_name": { "type": "string", "__example__": "Hair Wash" },
+        "when": { "type": "string", "__example__": "Tuesday 1 September, 09:00" },
+        "customer_name": { "type": "string", "__example__": "Naomi" },
+        "phone": { "type": "string", "__example__": "+263771234567" },
+        "hold_notice": { "type": "string", "__example__": "This time is held for you." },
+        "has_error": { "type": "boolean", "__example__": false },
+        "error_message": { "type": "string", "__example__": "" }
+      },
+      "terminal": true,
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "Form",
+            "name": "summary_form",
+            "children": [
+              {
+                "type": "TextBody",
+                "text": "${data.error_message}",
+                "visible": "${data.has_error}"
+              },
+              { "type": "TextSubheading", "text": "${data.service_name}" },
+              { "type": "TextBody", "text": "${data.when}" },
+              { "type": "TextBody", "text": "${data.customer_name}" },
+              { "type": "TextCaption", "text": "${data.hold_notice}" },
+              {
+                "type": "Footer",
+                "label": "Confirm booking",
+                "on-click-action": { "name": "data_exchange", "payload": {} }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "SUCCESS",
+      "title": "Booked",
+      "terminal": true,
+      "success": true,
+      "data": {
+        "extension_message_response": {
+          "type": "object",
+          "properties": {
+            "params": {
+              "type": "object",
+              "properties": {
+                "flow_token": { "type": "string" },
+                "booking_id": { "type": "string" },
+                "status": { "type": "string" }
+              }
+            }
+          },
+          "__example__": {
+            "params": { "flow_token": "booking-1", "booking_id": "1", "status": "BOOKED" }
+          }
+        }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "Form",
+            "name": "success_form",
+            "children": [
+              { "type": "TextHeading", "text": "You're booked!" },
+              {
+                "type": "TextBody",
+                "text": "We've sent the details to your chat. We'll remind you before your appointment."
+              },
+              {
+                "type": "Footer",
+                "label": "Done",
+                "on-click-action": {
+                  "name": "complete",
+                  "payload": {
+                    "flow_token": "${data.extension_message_response.params.flow_token}",
+                    "booking_id": "${data.extension_message_response.params.booking_id}",
+                    "status": "${data.extension_message_response.params.status}"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
