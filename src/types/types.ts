@@ -591,32 +591,109 @@ export interface PaymentDetails {
   
 }
 
-export type TCreateService = {
-  title: string;
-  slug: string;
-  lengthInMinutes: number;
-};
+// SCHEDULER API ------------------------------------------------------------
 
-export type TSlot = {
-  time: string;
-};
+export interface TSchedulerService {
+  id: string;
+  name: string;
+  description: string | null;
+  baseDurationMinutes: number;
+  bufferDurationMinutes: number;
+  resourceType: string;
+  priceCents: number;
+  currency: string;
+}
 
-export type TCreateBooking = {
+export interface TSchedulerStaff {
+  id: string;
+  name: string;
+  resourceType?: string;
+}
+
+export interface TSchedulerSlot {
   start: string;
-  attendee: {
-    name: string;
-    email: string;
-    timeZone: string;
-    phoneNumber: string
-  };
-  eventTypeId: number;
-};
+  serviceEnd: string;
+  endWithBuffer: string;
+  localStart: string;
+  /** Everyone free for this slot; more than one means the customer may choose. */
+  staff: TSchedulerStaff[];
+}
 
-export interface ICalcomSlotsResponse {
+export interface TSchedulerSlotSearch {
+  date: string;
+  timezone: string;
+  service: {
+    id: string;
+    name: string;
+    baseDurationMinutes: number;
+    bufferDurationMinutes: number;
+    priceCents: number;
+    currency: string;
+  };
+  staff: TSchedulerStaff[];
+  slots: TSchedulerSlot[];
+}
+
+export type TSchedulerBookingStatus = "HOLD" | "BOOKED" | "CANCELLED" | "EXPIRED";
+
+export interface TSchedulerHold {
+  id: string;
+  status: TSchedulerBookingStatus;
+  staffId: string;
+  serviceId: string;
+  startsAt: string;
+  serviceEndsAt: string;
+  endsAt: string;
+  holdExpiresAt: string | null;
+  paymentReference: string | null;
+}
+
+export interface TSchedulerBooking extends TSchedulerHold {
+  service: { id: string; name: string; priceCents: number; currency: string } | null;
+  staff: { id: string; name: string } | null;
+  customer: { name?: string; phone?: string; socialHandle?: string } | null;
+  timezone: string;
+  localStart: string | null;
+  address: string | null;
+}
+
+export interface TSchedulerCustomerBooking {
+  id: string;
+  status: TSchedulerBookingStatus;
+  startsAt: string;
+  endsAt: string;
+  localStart: string | null;
+  timezone: string;
+  canCancel: boolean;
+  canReschedule: boolean;
+  service: { id: string; name: string; priceCents: number; currency: string } | null;
+  staff: { id: string; name: string } | null;
+}
+
+/** Events the scheduler posts to this service's signed webhook. */
+export type SchedulerEventType =
+  | "BOOKING_CREATED"
+  | "BOOKING_RESCHEDULED"
+  | "BOOKING_CANCELLED"
+  | "WAITLIST_SPOT_OPEN"
+  | "REMINDER_24H"
+  | "REMINDER_2H"
+  | "BOOKING_OTP_REQUESTED"
+  | "CUSTOMER_OTP_REQUESTED";
+
+export interface SchedulerWebhookEvent {
+  id: string;
+  type: SchedulerEventType;
+  createdAt: string;
   data: {
-    slots: {
-      [date: string]: TSlot[];
-    };
+    appointmentId?: string;
+    customerId?: string;
+    waitlistId?: string;
+    oldStartsAt?: string;
+    newStartsAt?: string;
+    /** Present only on OTP events, carried in the encrypted part of the payload. */
+    code?: string;
+    phone?: string;
   };
 }
 
@@ -624,4 +701,6 @@ export interface ServiceResponse<T = any> {
   success: boolean;
   data?: T;
   error?: string;
+  /** The scheduler's machine-readable error code, e.g. SLOT_UNAVAILABLE. */
+  code?: string;
 }

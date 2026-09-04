@@ -15,10 +15,8 @@ const mandatoryEnvironmentConstants = [
   "WHATSAPP_WEBHOOK_VERIFICATION_TOKEN",
   "WHATSAPP_PHONE_NUMBER_ID",
   "WHATSAPP_SYSTEM_TOKEN",
-  "CALCOM_API_KEY",
-  "CALCOM_VERSION",
-  "CALCOM_API_VERSION",
-  "CALCOM_API_VERSION_BOOKING"
+  "SCHEDULER_BASE_URL",
+  "SCHEDULER_API_KEY",
 ];
 
 const missingEnvironmentVariables = mandatoryEnvironmentConstants.filter(
@@ -61,10 +59,23 @@ export const CONFIG = {
   WHATSAPP_PHONE_NUMBER_ID: process.env.WHATSAPP_PHONE_NUMBER_ID || "",
   WHATSAPP_SYSTEM_TOKEN: process.env.WHATSAPP_SYSTEM_TOKEN || "",
   CATALOG_ID: process.env.CATALOG_ID || "",
-  CALCOM_API_KEY: process.env.CALCOM_API_KEY,
-  CALCOM_VERSION: process.env.CALCOM_VERSION,
-  CALCOM_API_VERSION: process.env.CALCOM_API_VERSION,
-  CALCOM_API_VERSION_BOOKING: process.env.CALCOM_API_VERSION_BOOKING,
+
+  // Scheduler API. The chatbot runs server-side, so it holds the secret key.
+  SCHEDULER_BASE_URL: process.env.SCHEDULER_BASE_URL || "",
+  SCHEDULER_API_KEY: process.env.SCHEDULER_API_KEY || "",
+  // Shared secret the scheduler signs its outbound webhooks with.
+  SCHEDULER_WEBHOOK_SECRET: process.env.SCHEDULER_WEBHOOK_SECRET || "",
+  SALON_TIMEZONE: process.env.SALON_TIMEZONE || "Africa/Harare",
+
+  // WhatsApp Flow used for booking. The private key decrypts Flow payloads;
+  // Meta holds the matching public key.
+  WHATSAPP_BOOKING_FLOW_ID: process.env.WHATSAPP_BOOKING_FLOW_ID || "",
+  WHATSAPP_FLOW_PRIVATE_KEY: process.env.WHATSAPP_FLOW_PRIVATE_KEY || "",
+  WHATSAPP_FLOW_PRIVATE_KEY_PASSPHRASE:
+    process.env.WHATSAPP_FLOW_PRIVATE_KEY_PASSPHRASE || "",
+  // "draft" while the Flow is still unpublished in the Meta dashboard.
+  WHATSAPP_FLOW_MODE:
+    process.env.WHATSAPP_FLOW_MODE === "draft" ? "draft" : "published",
 };
 logger.warn(
   `[${TAG}] Running in ${CONFIG.IS_LOCAL_ENVIRONMENT ? "LOCAL" : "PRODUCTION"} environment`,

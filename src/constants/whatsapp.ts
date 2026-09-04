@@ -17,7 +17,23 @@ export const BUTTONS_REPLY_ID = {
   continue: "continue",
 };
 
-export const TEXT_COMMANDS_ID ={
-hi: "hi"
-// can add the cancel commands and aslo admin commands
-}
+export const TEXT_COMMANDS_ID = {
+  hi: "hi",
+  menu: "menu",
+  book: "book",
+  bookings: "bookings",
+  help: "help",
+};
+
+/**
+ * Reply IDs carry the booking they act on, since WhatsApp gives us nothing but
+ * the row id back. Prefixes keep parsing unambiguous.
+ */
+export const MANAGE_REPLY_PREFIX = {
+  cancel: "mb-cancel:",
+  reschedule: "mb-move:",
+  date: "mb-date:",
+  time: "mb-time:",
+  confirmCancel: "mb-confirm-cancel",
+  keepBooking: "mb-keep",
+};
