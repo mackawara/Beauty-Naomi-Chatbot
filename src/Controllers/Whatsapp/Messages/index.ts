@@ -1,15 +1,11 @@
 import {
-  MainMenuRows,
   MainMenuSections,
-  ViewBookingMenuRows,
   ViewBookingMenuSections,
-} from "./mainMenu";
+} from "../../messageTemplatesRows";
 import { TextMessages } from "./textMessages";
 
 const WhatsappMessages = {
-  MainMenuRows,
   MainMenuSections,
-  ViewBookingMenuRows,
   ViewBookingMenuSections,
   TextMessages,
 };

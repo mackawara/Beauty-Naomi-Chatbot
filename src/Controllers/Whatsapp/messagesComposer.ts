@@ -1,7 +1,7 @@
 import { logger } from "../../services/logger";
 import whatsappMessager from "./outgoingWhatsappMessagesHandler";
 import { InteractiveList } from "../../types/types";
-import { MainMenuSections } from "./Messages/mainMenu";
+import { MainMenuSections } from "../messageTemplatesRows";
 import {
   InteractiveActionSection,
   Interactive,

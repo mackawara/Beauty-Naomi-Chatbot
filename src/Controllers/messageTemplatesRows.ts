@@ -3,13 +3,14 @@ import {
   Interactive,
   InteractiveActionSection,
   ReplyButtonObject,
-} from "../../../types/types";
+} from "../types/types";
 import {
   MAIN_MENU_REPLY_ID,
   VIEW_BOOKING_MENU_REPLY_ID,
-} from "../../../constants/whatsapp";
+  BOOKING_ID,
+} from "../constants/whatsapp";
 
-export const MainMenuRows: ActionSectionRows[] = [
+const MainMenuRows: ActionSectionRows[] = [
   {
     id: MAIN_MENU_REPLY_ID.book_appointment,
     title: "Make A Booking",
@@ -29,7 +30,7 @@ export const MainMenuSections: InteractiveActionSection[] = [
   },
 ];
 
-export const ViewBookingMenuRows: ActionSectionRows[] = [
+const ViewBookingMenuRows: ActionSectionRows[] = [
   {
     id: VIEW_BOOKING_MENU_REPLY_ID.cancel,
     title: "Cancel",
@@ -46,5 +47,25 @@ export const ViewBookingMenuSections: InteractiveActionSection[] = [
   {
     title: "Manage Booking",
     rows: ViewBookingMenuRows,
+  },
+];
+
+const BookingConfirmationRows: ActionSectionRows[] = [
+  {
+    id: BOOKING_ID.restartBooking,
+    title: "Restart",
+    description: "Cancel and start over",
+  },
+  {
+    id: BOOKING_ID.confirmBooking,
+    title: "Confirm",
+    description: "Confirm your appointment details",
+  },
+];
+
+export const BookingConfirmationSections: InteractiveActionSection[] = [
+  {
+    title: "Choose Action",
+    rows: BookingConfirmationRows,
   },
 ];

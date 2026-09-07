@@ -3,17 +3,22 @@ import {
   MAIN_MENU_REPLY_ID,
   VIEW_BOOKING_MENU_REPLY_ID,
   TEXT_COMMANDS_ID,
+  BOOKING_ID,
 } from "../../constants/whatsapp";
 import messageComposer from "../Whatsapp/messagesComposer";
 import WhatsappMessages from "../Whatsapp/Messages";
 import whatsappMessager from "../Whatsapp/outgoingWhatsappMessagesHandler";
 import { InteractivePayLoad } from "../../types/types";
-import { MainMenuSections } from "../Whatsapp/Messages/mainMenu";
+import { MainMenuSections } from "../messageTemplatesRows";
+import { sendBookingConfirmation, bookingStageHandler } from "../Booking/booking";
+import { setRedisKeyValuePair } from "../Conversation/redisController";
+import { BOOKING_STAGES } from "../../constants/whatsapp";
+import { bookingMessages } from "../../constants/bookingMessages";
 
 const buttonReplyHandler = async (clientNumber: string, replyId: string) => {
   const TAG = "[REPLY-BUTTON-MESSAGE]"
   try {
-    logger.info( `${TAG} Received a button reply message`);
+    logger.info(`${TAG} Received a button reply message`);
   } catch (error) {
     logger.error("Error on button reply handler", error);
   }
@@ -54,6 +59,17 @@ const listReplyHandler = async (clientNumber: string, replyId: string) => {
       case VIEW_BOOKING_MENU_REPLY_ID.reschedule:
         logger.info("The reschedule button was clicked");
         break;
+      case BOOKING_ID.restartBooking:
+        await setRedisKeyValuePair(clientNumber, "currentStage", BOOKING_STAGES.bookingFullName);
+        await whatsappMessager.sendFreeFormTextMessage(
+          clientNumber,
+          bookingMessages.bookingStagesMsgs.restartBookingMsg
+        );
+        break;
+      case BOOKING_ID.confirmBooking:
+        logger.info("The confirm booking button was clicked");
+        await sendBookingConfirmation(clientNumber);
+        break;
       default:
         break;
     }
@@ -81,6 +97,7 @@ const textReplyHandler = async (clientNumber: string, text: string) => {
         }
         break;
       default:
+        await bookingStageHandler(clientNumber, text);
         break;
     }
 
@@ -124,6 +141,7 @@ const interactiveReplyHandler = async (
     throw error;
   }
 };
+
 
 const CONVERSATION_CONTROLLER = {
   buttonReplyHandler,
