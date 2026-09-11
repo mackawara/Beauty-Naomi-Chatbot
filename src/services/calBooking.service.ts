@@ -18,6 +18,7 @@ export const createService = async (
     title,
     slug: title.toLocaleLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
     lengthInMinutes: durationInMinutes,
+    slotInterval: 15
   };
 
   try {

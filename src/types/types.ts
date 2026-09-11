@@ -595,6 +595,7 @@ export type TCreateService = {
   title: string;
   slug: string;
   lengthInMinutes: number;
+  slotInterval: number;
 };
 
 export type TSlot = {
