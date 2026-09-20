@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from "axios";
 import { CONFIG } from "../config";
-import { TCreateBooking, TSlot, TCreateService, ICalcomSlotsResponse, ServiceResponse } from "../types/types";
+import { TCreateBooking, TSlot, TCreateService, ICalcomSlotsResponse, ServiceResponse, IReschedulingPayload, IRescheduleParams, IRescheduleBookingReturn } from "../types/types";
 import { endOfDay, format, isBefore, parseISO, startOfDay } from "date-fns";
-const {CALCOM_API_KEY, CALCOM_VERSION, CALCOM_API_VERSION, CALCOM_API_VERSION_BOOKING} = CONFIG;
+const {CALCOM_API_KEY, CALCOM_VERSION, CALCOM_API_VERSION, CALCOM_API_VERSION_BOOKING } = CONFIG;
 
 const calBaseUrl = `https://api.cal.com/v${CALCOM_VERSION}`
 
@@ -55,8 +55,10 @@ export const createBooking = async (
     return { success: false, error: "Missing required fields" };
   };
 
+  const dateObject = format(parseISO(`${day}T${time}`), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+  
   const payload: TCreateBooking = {
-    start: `${day}T${time}:00.000Z`,
+    start: dateObject,
     attendee: {
       name: attendeeName,
       email: attendeeEmail,
@@ -84,6 +86,32 @@ export const createBooking = async (
     return { success: false, error: error.response?.data?.error?.message || "Failed to create booking" };
   };
 };
+
+
+export const rescheduleBooking = async({bookingUid, date, start, reschedulingReason, email}: IRescheduleParams): Promise<IRescheduleBookingReturn> => {
+  const dateObject = format(parseISO(`${date}T${start}`), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+  const payload: IReschedulingPayload = {
+    start: dateObject,
+    rescheduledBy: email || "",
+    reschedulingReason
+  };
+
+  try{
+    const response = await axios.post(`${calBaseUrl}/bookings/${bookingUid}/reschedule`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${CALCOM_API_KEY}`,
+        'cal-api-version': CALCOM_API_VERSION_BOOKING
+      }
+    });
+
+    return { success: true, data: response?.data};
+  } catch(error: any) {
+    return { success: false, error: `${error?.message}`}
+  };
+};
+
+
 
 export const getAvailableSlots = async (eventTypeId: number, date: string): Promise<ServiceResponse<string[]>> => {
   if (!eventTypeId || !date) {

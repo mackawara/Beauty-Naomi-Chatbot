@@ -18,7 +18,7 @@ const mandatoryEnvironmentConstants = [
   "CALCOM_API_KEY",
   "CALCOM_VERSION",
   "CALCOM_API_VERSION",
-  "CALCOM_API_VERSION_BOOKING"
+  "CALCOM_API_VERSION_BOOKING",
 ];
 
 const missingEnvironmentVariables = mandatoryEnvironmentConstants.filter(

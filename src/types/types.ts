@@ -625,3 +625,31 @@ export interface ServiceResponse<T = any> {
   data?: T;
   error?: string;
 }
+
+export interface IReschedulingPayload {
+  start: string,
+  rescheduledBy: string,
+  reschedulingReason: string
+};
+
+  export interface IRescheduleParams {
+  bookingUid: string, 
+  date: string, 
+  start: string, 
+  reschedulingReason: string,
+  email?: string
+}
+
+export interface IRescheduleBookingReturn {
+  success: boolean,
+  data? : IRescheduleDataType,
+  error?: string
+}
+
+
+export interface IRescheduleDataType {
+  id: number,
+  uuid: string,
+  duration: number,
+  eventTypeId: number
+};
