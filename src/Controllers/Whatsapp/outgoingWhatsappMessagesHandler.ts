@@ -76,6 +76,8 @@ export function createFlowInteractive(params: {
   initialData?: Record<string, unknown>;
   headerText?: string;
   footerText?: string;
+  /** "data_exchange" makes WhatsApp call our Flow endpoint (INIT) for the first screen. */
+  flowAction?: "navigate" | "data_exchange";
 }): InteractiveFlow {
   const {
     bodyText,
@@ -86,12 +88,8 @@ export function createFlowInteractive(params: {
     initialData,
     headerText,
     footerText,
+    flowAction = "navigate",
   } = params;
-  const flowActionPayload = {
-    screen: initialScreen,
-    data:
-      isEmpty(initialData) || initialData === undefined ? null : initialData,
-  };
   const interactive: InteractiveFlow = {
     type: "flow",
     //sub_type: "interactive",
@@ -106,11 +104,15 @@ export function createFlowInteractive(params: {
         flow_token: flowToken,
         flow_id: flowId,
         flow_cta: flowCta,
-        flow_action: "navigate",
-        flow_action_payload: {
-          screen: initialScreen,
-          data: isEmpty(initialData) ? undefined : initialData,
-        },
+        flow_action: flowAction,
+        ...(flowAction === "navigate"
+          ? {
+              flow_action_payload: {
+                screen: initialScreen,
+                data: isEmpty(initialData) ? undefined : initialData,
+              },
+            }
+          : {}),
       },
     },
   };

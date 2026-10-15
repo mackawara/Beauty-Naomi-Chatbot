@@ -52,7 +52,8 @@ export const incomingMessages = async (req: Request, res: Response) => {
                })),
              };
 
-          await processWhatsAppOrder(clientNumber, orderPayload);
+          const profileName = reqBody.entry[0].changes[0].value.contacts?.[0]?.profile?.name;
+          await processWhatsAppOrder(clientNumber, orderPayload, profileName);
           }
           break;
         case "reaction":
