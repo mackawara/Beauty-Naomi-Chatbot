@@ -6,7 +6,16 @@ import { connectDb } from "./services/db";
 import router from "./routes/whatsappRoutes";
 import { RedisService } from "./services/redis";
 import schedulerRoutes from "./routes/schedulerRoutes";
-import { schedulerCheckLive, schedulerCheckReady } from "./services/schedulerService";
+import schedulerService, { schedulerCheckLive, schedulerCheckReady } from "./services/schedulerService";
+import { registerBookingFlow } from "./Controllers/Whatsapp/flows/bookingFlow";
+import { handleConfirmedBooking } from "./Controllers/Whatsapp/flows/bookingConfirmation";
+import { redisFlowContextStore } from "./services/flowContext";
+
+registerBookingFlow({
+  scheduler: schedulerService,
+  contexts: redisFlowContextStore,
+  onConfirmed: handleConfirmedBooking,
+});
 
 const app = express();
 app.use(cors());
