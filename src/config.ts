@@ -18,7 +18,9 @@ const mandatoryEnvironmentConstants = [
   "CALCOM_API_KEY",
   "CALCOM_VERSION",
   "CALCOM_API_VERSION",
-  "CALCOM_API_VERSION_BOOKING"
+  "CALCOM_API_VERSION_BOOKING",
+  "SCHEDULER_API_URL",
+  "SCHEDULER_API_KEY",
 ];
 
 const missingEnvironmentVariables = mandatoryEnvironmentConstants.filter(
@@ -66,7 +68,7 @@ export const CONFIG = {
   CALCOM_API_VERSION: process.env.CALCOM_API_VERSION,
   CALCOM_API_VERSION_BOOKING: process.env.CALCOM_API_VERSION_BOOKING,
   SCHEDULER_API_KEY: process.env.SCHEDULER_API_KEY || "",
-  SCHEDULER_API_URL: process.env.SCHEDULER_API_URL || "http://localhost:4000", 
+  SCHEDULER_API_URL: process.env.SCHEDULER_API_URL || "http://localhost:4100",
   SCHEDULER_API_TIMEOUT: parseInt(process.env.SCHEDULER_API_TIMEOUT || "0", 10) || 5000,
 };
 logger.warn(
