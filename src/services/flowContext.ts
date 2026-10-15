@@ -35,3 +35,8 @@ export const redisFlowContextStore: FlowContextStore = {
     await redisClient.del(key(flowToken));
   },
 };
+
+/** Shortens the context's lifetime after a booking so late retries still resolve, then it expires. */
+export const releaseFlowContext = async (flowToken: string) => {
+  await redisClient.expire(key(flowToken), 10 * 60);
+};
