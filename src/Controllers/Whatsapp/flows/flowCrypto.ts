@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { EncryptedFlowRequest, FlowRequest } from "../../../types/flows";
+import { isValidSha256Signature } from "../../../UTILS/signatures";
 
 const TAG_LENGTH = 16;
 
@@ -49,14 +50,7 @@ export const encryptFlowResponse = (response: unknown, aesKey: Buffer, initialVe
 };
 
 /** Validates Meta's X-Hub-Signature-256 header (HMAC-SHA256 of the raw body with the app secret). */
-export const isValidMetaSignature = (rawBody: Buffer | undefined, header: string | undefined, appSecret: string) => {
-  if (!rawBody || !header?.startsWith("sha256=")) {
-    return false;
-  }
-  const expected = crypto.createHmac("sha256", appSecret).update(rawBody).digest();
-  const received = Buffer.from(header.slice("sha256=".length), "hex");
-  return received.length === expected.length && crypto.timingSafeEqual(received, expected);
-};
+export const isValidMetaSignature = isValidSha256Signature;
 
 /** Loads the PEM private key from env (supports "\n"-escaped single-line values). */
 export const loadPrivateKey = (pem: string, passphrase?: string) =>

@@ -24,6 +24,7 @@ const mandatoryEnvironmentConstants = [
   "WHATSAPP_APP_SECRET",
   "WHATSAPP_FLOW_PRIVATE_KEY",
   "WHATSAPP_BOOKING_FLOW_ID",
+  "SCHEDULER_WEBHOOK_SECRET",
 ];
 
 const missingEnvironmentVariables = mandatoryEnvironmentConstants.filter(
@@ -75,6 +76,11 @@ export const CONFIG = {
   WHATSAPP_FLOW_PRIVATE_KEY: process.env.WHATSAPP_FLOW_PRIVATE_KEY || "",
   WHATSAPP_FLOW_PRIVATE_KEY_PASSPHRASE: process.env.WHATSAPP_FLOW_PRIVATE_KEY_PASSPHRASE || "",
   WHATSAPP_BOOKING_FLOW_ID: process.env.WHATSAPP_BOOKING_FLOW_ID || "",
+  SCHEDULER_WEBHOOK_SECRET: process.env.SCHEDULER_WEBHOOK_SECRET || "",
+  WHATSAPP_TEMPLATE_LANGUAGE: process.env.WHATSAPP_TEMPLATE_LANGUAGE || "en_US",
+  WHATSAPP_TEMPLATE_REMINDER: process.env.WHATSAPP_TEMPLATE_REMINDER || "booking_reminder",
+  WHATSAPP_TEMPLATE_CANCELLED: process.env.WHATSAPP_TEMPLATE_CANCELLED || "booking_cancelled",
+  WHATSAPP_TEMPLATE_RESCHEDULED: process.env.WHATSAPP_TEMPLATE_RESCHEDULED || "booking_rescheduled",
   SCHEDULER_API_URL: process.env.SCHEDULER_API_URL || "http://localhost:4100",
   SCHEDULER_API_TIMEOUT: parseInt(process.env.SCHEDULER_API_TIMEOUT || "0", 10) || 5000,
 };

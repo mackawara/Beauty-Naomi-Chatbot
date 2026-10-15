@@ -111,3 +111,20 @@ The booking Flow loads dates and time slots live through `data_exchange`, so Wha
 The endpoint answers `ping` health checks, acknowledges client error notifications, returns `432` for a bad signature and `421` when a request cannot be decrypted (WhatsApp then re-fetches the public key). Screen logic is registered per screen and `trigger` in `src/Controllers/Whatsapp/flows/flowRouter.ts`.
 
 Run the tests with `yarn test`.
+
+
+# Scheduler notifications (reminders, cancellations, reschedules)
+The in-house scheduler POSTs signed events to `POST /scheduler/events`. Configure its app webhook URL as `https://<public host>/scheduler/events` (`BEAUTY_NAOMI_WEBHOOK_URL` when seeding the scheduler) and set `SCHEDULER_WEBHOOK_SECRET` here to the signing secret the scheduler seed prints.
+
+- Requests with a bad `x-scheduler-signature` are rejected with `401`.
+- Each event id is processed once (Redis `scheduler-event:<id>`, 7 days), so redeliveries do not message twice.
+- `BOOKING_CANCELLED` / `BOOKING_RESCHEDULED` also update the local booking; `BOOKING_CREATED` is ignored (the Flow already confirmed it).
+- A `5xx` is returned when sending fails so the scheduler retries after 1, 5 and 15 minutes.
+
+Reminders usually arrive outside WhatsApp's 24-hour customer service window, so all of these are sent as **approved message templates**. Create them in WhatsApp Manager (category *Utility*, language `en_US` or set `WHATSAPP_TEMPLATE_LANGUAGE`). Names can be overridden with the env vars shown.
+
+| Event | Template (env var) | Body |
+| --- | --- | --- |
+| `REMINDER_24H`, `REMINDER_2H` | `booking_reminder` (`WHATSAPP_TEMPLATE_REMINDER`) | Hi {{1}}, this is a reminder of your {{2}} appointment at Beauty Naomi on {{3}} at {{4}}. Reply to this message if you need to make a change. |
+| `BOOKING_CANCELLED` | `booking_cancelled` (`WHATSAPP_TEMPLATE_CANCELLED`) | Your {{1}} appointment on {{2}} at {{3}} has been cancelled. Reply *hi* to book a new time. |
+| `BOOKING_RESCHEDULED` | `booking_rescheduled` (`WHATSAPP_TEMPLATE_RESCHEDULED`) | Your {{1}} appointment has been moved to {{2}} at {{3}}. Reply to this message if that doesn't suit you. |

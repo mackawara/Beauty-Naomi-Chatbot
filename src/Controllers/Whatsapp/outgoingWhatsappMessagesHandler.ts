@@ -243,7 +243,43 @@ export async function sendWhatsAppCatalogMessage({
   }
 }
 
+/**
+ * Send an approved message template with positional body parameters ({{1}}, {{2}}, ...).
+ * Templates can be delivered outside the 24-hour customer service window. Throws on failure.
+ */
+const sendTemplateMessage = async (
+  receivingNumber: string,
+  templateName: string,
+  bodyParameters: string[],
+  languageCode = CONFIG.WHATSAPP_TEMPLATE_LANGUAGE,
+) => {
+  try {
+    await axios({
+      method: "POST",
+      url: messagesEndpointUrl,
+      data: {
+        messaging_product: constants.whatsapp.WHATSAPP,
+        recipient_type: constants.whatsapp.INDIVIDUAL,
+        to: receivingNumber,
+        type: "template",
+        template: {
+          name: templateName,
+          language: { code: languageCode },
+          components: [
+            { type: "body", parameters: bodyParameters.map((text) => ({ type: "text", text })) },
+          ],
+        },
+      },
+    });
+    logger.info(`${TAG}: template ${templateName} sent to ${receivingNumber}`);
+  } catch (err) {
+    const detail = UTILS.isFacebookAPIError(err) ? err.response.data.error.message : String(err);
+    throw new Error(`Template ${templateName} failed: ${detail}`);
+  }
+};
+
 const whatsappMessager = {
+  sendTemplateMessage,
   sendFreeFormTextMessage,
   sendInteractive,
   createFlowInteractive,
