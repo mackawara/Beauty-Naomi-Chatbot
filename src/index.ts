@@ -10,7 +10,14 @@ import { schedulerCheckLive, schedulerCheckReady } from "./services/schedulerSer
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(
+  express.json({
+    // Keep the raw bytes so webhook signatures (Meta, scheduler) can be verified.
+    verify: (req, _res, buf) => {
+      (req as Request).rawBody = buf;
+    },
+  }),
+);
 app.use(schedulerRoutes);
 app.use("/whatsapp", router);
 

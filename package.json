@@ -22,7 +22,8 @@
     "start": "node dist/index.js",
     "build": "tsc",
     "start:ngrok": "ngrok http --domain=unsearched-nonmyopically-merri.ngrok-free.dev 3000",
-    "dev": "nodemon  --exec ./node_modules/.bin/ts-node --files src/index.ts"
+    "dev": "nodemon  --exec ./node_modules/.bin/ts-node --files src/index.ts",
+    "test": "TS_NODE_TRANSPILE_ONLY=true node --require ts-node/register --test \"test/**/*.test.ts\""
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
