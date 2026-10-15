@@ -1,0 +1,128 @@
+{
+  "version": "7.1",
+  "data_api_version": "3.0",
+  "routing_model": {
+    "BOOK": ["SUCCESS"],
+    "SUCCESS": []
+  },
+  "screens": [
+    {
+      "id": "BOOK",
+      "title": "Book appointment",
+      "data": {
+        "service_name": { "type": "string", "__example__": "Hair Wash" },
+        "service_details": { "type": "string", "__example__": "60 min · USD 15.00" },
+        "dates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": { "id": { "type": "string" }, "title": { "type": "string" } }
+          },
+          "__example__": [
+            { "id": "2026-10-20", "title": "Tue 20 Oct · 8 times" },
+            { "id": "2026-10-21", "title": "Wed 21 Oct · 12 times" }
+          ]
+        },
+        "has_dates": { "type": "boolean", "__example__": true },
+        "selected_date": { "type": "string", "__example__": "2026-10-20" },
+        "slots": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": { "id": { "type": "string" }, "title": { "type": "string" } }
+          },
+          "__example__": [
+            { "id": "2026-10-20T07:00:00.000Z", "title": "09:00" },
+            { "id": "2026-10-20T07:15:00.000Z", "title": "09:15" }
+          ]
+        },
+        "has_slots": { "type": "boolean", "__example__": true },
+        "slot_message": { "type": "string", "__example__": "Pick a time that suits you." },
+        "customer_name": { "type": "string", "__example__": "Rudo" }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          { "type": "TextHeading", "text": "${data.service_name}" },
+          { "type": "TextBody", "text": "${data.service_details}" },
+          {
+            "type": "Dropdown",
+            "name": "date",
+            "label": "Date",
+            "required": true,
+            "visible": "${data.has_dates}",
+            "init-value": "${data.selected_date}",
+            "data-source": "${data.dates}",
+            "on-select-action": {
+              "name": "data_exchange",
+              "payload": {
+                "trigger": "date_selected",
+                "date": "${form.date}",
+                "name": "${form.name}"
+              }
+            }
+          },
+          { "type": "TextBody", "text": "${data.slot_message}" },
+          {
+            "type": "Dropdown",
+            "name": "slot",
+            "label": "Time",
+            "required": true,
+            "visible": "${data.has_slots}",
+            "data-source": "${data.slots}"
+          },
+          {
+            "type": "TextInput",
+            "name": "name",
+            "label": "Your name",
+            "input-type": "text",
+            "required": true,
+            "init-value": "${data.customer_name}"
+          },
+          {
+            "type": "Footer",
+            "label": "Confirm booking",
+            "on-click-action": {
+              "name": "data_exchange",
+              "payload": {
+                "trigger": "confirm",
+                "date": "${form.date}",
+                "slot": "${form.slot}",
+                "name": "${form.name}"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "SUCCESS",
+      "title": "Booked",
+      "terminal": true,
+      "success": true,
+      "data": {
+        "summary": {
+          "type": "string",
+          "__example__": "Hair Wash\nTue 20 Oct at 09:00\nRef BN-12"
+        },
+        "booking_id": { "type": "string", "__example__": "BN-12" }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          { "type": "TextHeading", "text": "You're booked! 💅" },
+          { "type": "TextBody", "text": "${data.summary}" },
+          { "type": "TextCaption", "text": "We'll send the details to this chat." },
+          {
+            "type": "Footer",
+            "label": "Done",
+            "on-click-action": {
+              "name": "complete",
+              "payload": { "booking_id": "${data.booking_id}" }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
