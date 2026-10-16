@@ -111,6 +111,18 @@ const interactiveReplyHandler = async (
         await listReplyHandler(clientNumber, listReply);
         break;
       }
+      case "nfm_reply": {
+        // Sent when the customer taps Done on the booking Flow. The booking and the
+        // confirmation message were already handled by the Flow endpoint.
+        let bookingId: unknown;
+        try {
+          bookingId = JSON.parse(interactive.nfm_reply.response_json)?.booking_id;
+        } catch {
+          bookingId = undefined;
+        }
+        logger.info(`${TAG} Flow completed${bookingId ? ` for booking ${bookingId}` : ""}`);
+        break;
+      }
       default:
         break;
     }

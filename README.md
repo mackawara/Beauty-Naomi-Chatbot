@@ -1,6 +1,16 @@
 # Beauty-Naomi-Chatbot
 A whatsapp chatbot for booking services
 
+## Booking journey
+1. The customer sends *hi* → the bot sends the main menu.
+2. *Make A Booking* opens the WhatsApp catalog; the customer orders one service.
+3. The bot maps the product's retailer ID to a service in the in-house scheduler ([mackawara/scheduler](https://github.com/mackawara/scheduler)) and sends the booking Flow.
+4. In the Flow the customer picks a date (the times reload on the same screen), a time and confirms. The scheduler holds and confirms the slot and the bot sends a confirmation message.
+
+To try the whole journey on your machine (no real WhatsApp number needed), follow [docs/local-smoke-test.md](docs/local-smoke-test.md).
+
+Availability, blocked slots, holds and bookings all live in the scheduler; admins manage them from the admin portal. Copy `.env.example` to `.env` and fill it in: the scheduler API key (`SCHEDULER_API_KEY`) and webhook signing secret (`SCHEDULER_WEBHOOK_SECRET`) are printed by the scheduler's seed script.
+
 # Ngrok setup
 Run the command ngrok config add-authtoken 'token'
 Run the ngrok script
@@ -86,3 +96,45 @@ Open Docker Desktop and go to the Containers tab. You should see three container
 Or run this command in terminal:
 
 docker ps
+
+
+# WhatsApp Flows data endpoint
+The booking Flow loads dates and time slots live through `data_exchange`, so WhatsApp calls our endpoint at `POST /whatsapp/flows`. Every request is encrypted and signed.
+
+1. Generate a key pair (keep the private key secret):
+   ```bash
+   openssl genrsa -des3 -out flow_private.pem 2048
+   openssl rsa -in flow_private.pem -outform PEM -pubout -out flow_public.pem
+   ```
+2. Upload the public key for the business phone number:
+   ```bash
+   curl -X POST "https://graph.facebook.com/v21.0/$WHATSAPP_PHONE_NUMBER_ID/whatsapp_business_encryption" \
+     -H "Authorization: Bearer $WHATSAPP_SYSTEM_TOKEN" \
+     --data-urlencode "business_public_key=$(cat flow_public.pem)"
+   ```
+3. Set in `.env`:
+   - `WHATSAPP_FLOW_PRIVATE_KEY`: the PEM contents (newlines may be written as `\n` on one line)
+   - `WHATSAPP_FLOW_PRIVATE_KEY_PASSPHRASE`: the passphrase used above
+   - `WHATSAPP_APP_SECRET`: Meta app secret (App settings → Basic), used to verify `X-Hub-Signature-256`
+4. In Flow Builder set the endpoint URI to `https://<public host>/whatsapp/flows` and run **Health check**.
+
+The endpoint answers `ping` health checks, acknowledges client error notifications, returns `432` for a bad signature and `421` when a request cannot be decrypted (WhatsApp then re-fetches the public key). Screen logic is registered per screen and `trigger` in `src/Controllers/Whatsapp/flows/flowRouter.ts`.
+
+Run the tests with `yarn test`.
+
+
+# Scheduler notifications (reminders, cancellations, reschedules)
+The in-house scheduler POSTs signed events to `POST /scheduler/events`. Configure its app webhook URL as `https://<public host>/scheduler/events` (`BEAUTY_NAOMI_WEBHOOK_URL` when seeding the scheduler) and set `SCHEDULER_WEBHOOK_SECRET` here to the signing secret the scheduler seed prints.
+
+- Requests with a bad `x-scheduler-signature` are rejected with `401`.
+- Each event id is processed once (Redis `scheduler-event:<id>`, 7 days), so redeliveries do not message twice.
+- `BOOKING_CANCELLED` / `BOOKING_RESCHEDULED` also update the local booking; `BOOKING_CREATED` is ignored (the Flow already confirmed it).
+- A `5xx` is returned when sending fails so the scheduler retries after 1, 5 and 15 minutes.
+
+Reminders usually arrive outside WhatsApp's 24-hour customer service window, so all of these are sent as **approved message templates**. Create them in WhatsApp Manager (category *Utility*, language `en_US` or set `WHATSAPP_TEMPLATE_LANGUAGE`). Names can be overridden with the env vars shown.
+
+| Event | Template (env var) | Body |
+| --- | --- | --- |
+| `REMINDER_24H`, `REMINDER_2H` | `booking_reminder` (`WHATSAPP_TEMPLATE_REMINDER`) | Hi {{1}}, this is a reminder of your {{2}} appointment at Beauty Naomi on {{3}} at {{4}}. Reply to this message if you need to make a change. |
+| `BOOKING_CANCELLED` | `booking_cancelled` (`WHATSAPP_TEMPLATE_CANCELLED`) | Your {{1}} appointment on {{2}} at {{3}} has been cancelled. Reply *hi* to book a new time. |
+| `BOOKING_RESCHEDULED` | `booking_rescheduled` (`WHATSAPP_TEMPLATE_RESCHEDULED`) | Your {{1}} appointment has been moved to {{2}} at {{3}}. Reply to this message if that doesn't suit you. |

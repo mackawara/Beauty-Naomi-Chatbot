@@ -63,6 +63,8 @@ const sendInteractive = async (
       logger.error(
         `${TAG}: ${message}, ${error_data?.details} Facebook traceID : ${fbtrace_id}`,
       );
+    } else {
+      logger.error(`${TAG}: could not send to ${receivingNumber}: ${err instanceof Error ? err.message : err}`);
     }
   }
 };
@@ -76,6 +78,8 @@ export function createFlowInteractive(params: {
   initialData?: Record<string, unknown>;
   headerText?: string;
   footerText?: string;
+  /** "data_exchange" makes WhatsApp call our Flow endpoint (INIT) for the first screen. */
+  flowAction?: "navigate" | "data_exchange";
 }): InteractiveFlow {
   const {
     bodyText,
@@ -86,12 +90,8 @@ export function createFlowInteractive(params: {
     initialData,
     headerText,
     footerText,
+    flowAction = "navigate",
   } = params;
-  const flowActionPayload = {
-    screen: initialScreen,
-    data:
-      isEmpty(initialData) || initialData === undefined ? null : initialData,
-  };
   const interactive: InteractiveFlow = {
     type: "flow",
     //sub_type: "interactive",
@@ -106,11 +106,15 @@ export function createFlowInteractive(params: {
         flow_token: flowToken,
         flow_id: flowId,
         flow_cta: flowCta,
-        flow_action: "navigate",
-        flow_action_payload: {
-          screen: initialScreen,
-          data: isEmpty(initialData) ? undefined : initialData,
-        },
+        flow_action: flowAction,
+        ...(flowAction === "navigate"
+          ? {
+              flow_action_payload: {
+                screen: initialScreen,
+                data: isEmpty(initialData) ? undefined : initialData,
+              },
+            }
+          : {}),
       },
     },
   };
@@ -241,7 +245,43 @@ export async function sendWhatsAppCatalogMessage({
   }
 }
 
+/**
+ * Send an approved message template with positional body parameters ({{1}}, {{2}}, ...).
+ * Templates can be delivered outside the 24-hour customer service window. Throws on failure.
+ */
+const sendTemplateMessage = async (
+  receivingNumber: string,
+  templateName: string,
+  bodyParameters: string[],
+  languageCode = CONFIG.WHATSAPP_TEMPLATE_LANGUAGE,
+) => {
+  try {
+    await axios({
+      method: "POST",
+      url: messagesEndpointUrl,
+      data: {
+        messaging_product: constants.whatsapp.WHATSAPP,
+        recipient_type: constants.whatsapp.INDIVIDUAL,
+        to: receivingNumber,
+        type: "template",
+        template: {
+          name: templateName,
+          language: { code: languageCode },
+          components: [
+            { type: "body", parameters: bodyParameters.map((text) => ({ type: "text", text })) },
+          ],
+        },
+      },
+    });
+    logger.info(`${TAG}: template ${templateName} sent to ${receivingNumber}`);
+  } catch (err) {
+    const detail = UTILS.isFacebookAPIError(err) ? err.response.data.error.message : String(err);
+    throw new Error(`Template ${templateName} failed: ${detail}`);
+  }
+};
+
 const whatsappMessager = {
+  sendTemplateMessage,
   sendFreeFormTextMessage,
   sendInteractive,
   createFlowInteractive,

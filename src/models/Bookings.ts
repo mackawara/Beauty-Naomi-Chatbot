@@ -71,6 +71,21 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     default: "Order received via WhatsApp"
   },
+  status: {
+    type: String,
+    enum: ["PENDING_SLOT", "CONFIRMED", "CANCELLED"],
+    default: "PENDING_SLOT",
+  },
+  // In-house scheduler references
+  schedulerServiceId: {
+    type: String,
+    default: null,
+  },
+  schedulerAppointmentId: {
+    type: String,
+    default: null,
+    index: true,
+  },
   },
  {
   timestamps: true

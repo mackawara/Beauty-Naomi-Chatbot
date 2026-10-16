@@ -6,19 +6,24 @@ dotenv.config({ path: path.join(__dirname, "../.env") });
 
 const TAG = "CONFIG";
 
+// MONGODB_URI (e.g. a local replica set) replaces the Atlas username/password/host settings.
+const mongoEnvironmentConstants = process.env.MONGODB_URI
+  ? []
+  : ["MONGODB_PASSWORD", "MONGODB_USERNAME", "MONGODB_HOST"];
+
 const mandatoryEnvironmentConstants = [
   "APP_ENV",
   "PORT",
-  "MONGODB_PASSWORD",
-  "MONGODB_USERNAME",
-  "MONGODB_HOST",
+  ...mongoEnvironmentConstants,
   "WHATSAPP_WEBHOOK_VERIFICATION_TOKEN",
   "WHATSAPP_PHONE_NUMBER_ID",
   "WHATSAPP_SYSTEM_TOKEN",
-  "CALCOM_API_KEY",
-  "CALCOM_VERSION",
-  "CALCOM_API_VERSION",
-  "CALCOM_API_VERSION_BOOKING"
+  "SCHEDULER_API_URL",
+  "SCHEDULER_API_KEY",
+  "WHATSAPP_APP_SECRET",
+  "WHATSAPP_FLOW_PRIVATE_KEY",
+  "WHATSAPP_BOOKING_FLOW_ID",
+  "SCHEDULER_WEBHOOK_SECRET",
 ];
 
 const missingEnvironmentVariables = mandatoryEnvironmentConstants.filter(
@@ -47,6 +52,7 @@ if (missingEnvironmentVariables.length > 0) {
 export const CONFIG = {
   IS_LOCAL_ENVIRONMENT: process.env.APP_ENV || false,
   PORT: parseInt(process.env.PORT || "0", 10) || 4000,
+  MONGODB_URI: process.env.MONGODB_URI || "",
   MONGODB_HOST: process.env.MONGODB_HOST || "0.0.0.0",
   MONGODB_PASSWORD: process.env.MONGODB_PASSWORD || "",
   MONGODB_USERNAME: process.env.MONGODB_USERNAME || "",
@@ -61,12 +67,17 @@ export const CONFIG = {
   WHATSAPP_PHONE_NUMBER_ID: process.env.WHATSAPP_PHONE_NUMBER_ID || "",
   WHATSAPP_SYSTEM_TOKEN: process.env.WHATSAPP_SYSTEM_TOKEN || "",
   CATALOG_ID: process.env.CATALOG_ID || "",
-  CALCOM_API_KEY: process.env.CALCOM_API_KEY,
-  CALCOM_VERSION: process.env.CALCOM_VERSION,
-  CALCOM_API_VERSION: process.env.CALCOM_API_VERSION,
-  CALCOM_API_VERSION_BOOKING: process.env.CALCOM_API_VERSION_BOOKING,
   SCHEDULER_API_KEY: process.env.SCHEDULER_API_KEY || "",
-  SCHEDULER_API_URL: process.env.SCHEDULER_API_URL || "http://localhost:4000", 
+  WHATSAPP_APP_SECRET: process.env.WHATSAPP_APP_SECRET || "",
+  WHATSAPP_FLOW_PRIVATE_KEY: process.env.WHATSAPP_FLOW_PRIVATE_KEY || "",
+  WHATSAPP_FLOW_PRIVATE_KEY_PASSPHRASE: process.env.WHATSAPP_FLOW_PRIVATE_KEY_PASSPHRASE || "",
+  WHATSAPP_BOOKING_FLOW_ID: process.env.WHATSAPP_BOOKING_FLOW_ID || "",
+  SCHEDULER_WEBHOOK_SECRET: process.env.SCHEDULER_WEBHOOK_SECRET || "",
+  WHATSAPP_TEMPLATE_LANGUAGE: process.env.WHATSAPP_TEMPLATE_LANGUAGE || "en_US",
+  WHATSAPP_TEMPLATE_REMINDER: process.env.WHATSAPP_TEMPLATE_REMINDER || "booking_reminder",
+  WHATSAPP_TEMPLATE_CANCELLED: process.env.WHATSAPP_TEMPLATE_CANCELLED || "booking_cancelled",
+  WHATSAPP_TEMPLATE_RESCHEDULED: process.env.WHATSAPP_TEMPLATE_RESCHEDULED || "booking_rescheduled",
+  SCHEDULER_API_URL: process.env.SCHEDULER_API_URL || "http://localhost:4100",
   SCHEDULER_API_TIMEOUT: parseInt(process.env.SCHEDULER_API_TIMEOUT || "0", 10) || 5000,
 };
 logger.warn(

@@ -5,10 +5,19 @@ import CONVERSATION_CONTROLLER from "../Conversation/conversationController";
 import { processWhatsAppOrder } from "./order/whatsappOrderHandler";
 
 export const incomingMessages = async (req: Request, res: Response) => {
-  const reqBody: WebhookNotificationBody = req.body;
+  try {
+    await handleNotification(req.body as WebhookNotificationBody);
+  } catch (error) {
+    logger.error("Error handling WhatsApp webhook notification", error);
+  }
+  // Always acknowledge, including status-only notifications and failures,
+  // otherwise Meta keeps retrying the same notification.
+  res.status(200).json({ success: true });
+};
 
-  if (reqBody.object) {
-    const { messages } = reqBody.entry[0].changes[0].value;
+const handleNotification = async (reqBody: WebhookNotificationBody) => {
+  if (reqBody?.object) {
+    const messages = reqBody.entry?.[0]?.changes?.[0]?.value?.messages;
     if (messages) {
       const notificationType = messages[0].type;
       const clientNumber = messages[0].from;
@@ -52,7 +61,8 @@ export const incomingMessages = async (req: Request, res: Response) => {
                })),
              };
 
-          await processWhatsAppOrder(clientNumber, orderPayload);
+          const profileName = reqBody.entry[0].changes[0].value.contacts?.[0]?.profile?.name;
+          await processWhatsAppOrder(clientNumber, orderPayload, profileName);
           }
           break;
         case "reaction":
@@ -63,9 +73,6 @@ export const incomingMessages = async (req: Request, res: Response) => {
         default:
           break;
       }
-      res.status(200).json({
-        success: true,
-      });
     }
   }
 };

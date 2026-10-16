@@ -7,7 +7,11 @@ const isFacebookAPIError = (error: unknown): error is FacebookAPIError => {
     error !== null &&
     'response' in error &&
     typeof (error as FacebookAPIError).response === 'object' &&
+    (error as FacebookAPIError).response !== null &&
     'data' in (error as FacebookAPIError).response &&
+    // Non-JSON error bodies (e.g. from a proxy) arrive as strings
+    typeof (error as FacebookAPIError).response.data === 'object' &&
+    (error as FacebookAPIError).response.data !== null &&
     'error' in (error as FacebookAPIError).response.data
   );
 };
