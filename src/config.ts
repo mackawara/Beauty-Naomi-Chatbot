@@ -6,12 +6,15 @@ dotenv.config({ path: path.join(__dirname, "../.env") });
 
 const TAG = "CONFIG";
 
+// MONGODB_URI (e.g. a local replica set) replaces the Atlas username/password/host settings.
+const mongoEnvironmentConstants = process.env.MONGODB_URI
+  ? []
+  : ["MONGODB_PASSWORD", "MONGODB_USERNAME", "MONGODB_HOST"];
+
 const mandatoryEnvironmentConstants = [
   "APP_ENV",
   "PORT",
-  "MONGODB_PASSWORD",
-  "MONGODB_USERNAME",
-  "MONGODB_HOST",
+  ...mongoEnvironmentConstants,
   "WHATSAPP_WEBHOOK_VERIFICATION_TOKEN",
   "WHATSAPP_PHONE_NUMBER_ID",
   "WHATSAPP_SYSTEM_TOKEN",
@@ -49,6 +52,7 @@ if (missingEnvironmentVariables.length > 0) {
 export const CONFIG = {
   IS_LOCAL_ENVIRONMENT: process.env.APP_ENV || false,
   PORT: parseInt(process.env.PORT || "0", 10) || 4000,
+  MONGODB_URI: process.env.MONGODB_URI || "",
   MONGODB_HOST: process.env.MONGODB_HOST || "0.0.0.0",
   MONGODB_PASSWORD: process.env.MONGODB_PASSWORD || "",
   MONGODB_USERNAME: process.env.MONGODB_USERNAME || "",

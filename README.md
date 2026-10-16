@@ -7,6 +7,8 @@ A whatsapp chatbot for booking services
 3. The bot maps the product's retailer ID to a service in the in-house scheduler ([mackawara/scheduler](https://github.com/mackawara/scheduler)) and sends the booking Flow.
 4. In the Flow the customer picks a date (the times reload on the same screen), a time and confirms. The scheduler holds and confirms the slot and the bot sends a confirmation message.
 
+To try the whole journey on your machine (no real WhatsApp number needed), follow [docs/local-smoke-test.md](docs/local-smoke-test.md).
+
 Availability, blocked slots, holds and bookings all live in the scheduler; admins manage them from the admin portal. Copy `.env.example` to `.env` and fill it in: the scheduler API key (`SCHEDULER_API_KEY`) and webhook signing secret (`SCHEDULER_WEBHOOK_SECRET`) are printed by the scheduler's seed script.
 
 # Ngrok setup

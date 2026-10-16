@@ -1,31 +1,6 @@
 import crypto from "crypto";
 
-/** Encrypts a Flow request exactly like the WhatsApp client does, for tests. */
-export const encryptLikeWhatsApp = (body: unknown, publicKey: crypto.KeyObject) => {
-  const aesKey = crypto.randomBytes(16);
-  const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv("aes-128-gcm", aesKey, iv);
-  const encrypted = Buffer.concat([cipher.update(JSON.stringify(body), "utf-8"), cipher.final(), cipher.getAuthTag()]);
-  return {
-    aesKey,
-    iv,
-    payload: {
-      encrypted_flow_data: encrypted.toString("base64"),
-      encrypted_aes_key: crypto
-        .publicEncrypt({ key: publicKey, padding: crypto.constants.RSA_PKCS1_OAEP_PADDING, oaepHash: "sha256" }, aesKey)
-        .toString("base64"),
-      initial_vector: iv.toString("base64"),
-    },
-  };
-};
-
-/** Decrypts an endpoint response like the WhatsApp client (bit-flipped IV). */
-export const decryptResponseLikeWhatsApp = (base64: string, aesKey: Buffer, iv: Buffer) => {
-  const data = Buffer.from(base64, "base64");
-  const decipher = crypto.createDecipheriv("aes-128-gcm", aesKey, Buffer.from(iv.map((byte) => ~byte & 0xff)));
-  decipher.setAuthTag(data.subarray(-16));
-  return JSON.parse(Buffer.concat([decipher.update(data.subarray(0, -16)), decipher.final()]).toString("utf-8"));
-};
+export { decryptResponseLikeWhatsApp, encryptLikeWhatsApp } from "../scripts/flowClient";
 
 export const testKeyPair = () => crypto.generateKeyPairSync("rsa", { modulusLength: 2048 });
 

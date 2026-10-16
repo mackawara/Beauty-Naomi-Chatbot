@@ -63,6 +63,8 @@ const sendInteractive = async (
       logger.error(
         `${TAG}: ${message}, ${error_data?.details} Facebook traceID : ${fbtrace_id}`,
       );
+    } else {
+      logger.error(`${TAG}: could not send to ${receivingNumber}: ${err instanceof Error ? err.message : err}`);
     }
   }
 };
